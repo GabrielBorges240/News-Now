@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NewsNow - App de Notícias</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+
+  <style>
+    :root {
+      --background-color: #000;
+      --card-background-color: #0a0a0a;
+      --text-color: #fff;
+    }
+
+   /* Remove margens padrão do body e garante fundo preto total */
+body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(-45deg, #000, #111, #222, #111, #000);
+  background-size: 400% 400%;
+  animation: bgMove 8s ease infinite;
+  color: var(--text-color);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+ 
+
+/* Animação do fundo */
+@keyframes bgMove {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+
+    header {
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    h1 {
+      color: white;
+      font-size: 2.5rem;
+      letter-spacing: 2px;
+    }
+
+    p {
+      color: #ffffff;
+    }
+
+    form {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    input {
+      background: #1a1a1a;
+      border: 1px solid #444;
+      color: white;
+    }
+
+    button {
+      background: black;
+      color: white;
+      border: 1px solid white;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: white;
+      color: black;
+      border-color: white;
+      box-shadow: 0 0 10px white;
+    }
+
+    #news-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+
+    .card {
+  background: #000; /* fundo preto puro */
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.3s ease;
+  border: 2px solid rgba(255, 255, 255, 0.2); /* borda clara e suave */
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.15); /* leve brilho fixo */
+}
+
+/* Remove pulsação e mantém brilho constante nas bordas */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+}
+
+/* efeito de destaque ao passar o mouse */
+.card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+
+
+    @keyframes borderPulse {
+      0%, 100% {
+        box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
+      50% {
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+        border-color: rgba(255, 255, 255, 0.8);
+      }
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+    }
+
+    .card img {
+  width: 100%;
+  height: 100px; /* altura menor da imagem */
+  object-fit: cover;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-content {
+  padding: 0.6rem; /* ainda mais compacto */
+}
+
+.card h3 {
+  font-size: 0.9rem; /* título menor */
+  line-height: 1.3;
+}
+
+.card p {
+  font-size: 0.8rem; /* texto mais curto */
+  line-height: 1.4;
+}
+
+    .card h3 {
+      color: white;
+    }
+
+    .card p {
+      color: #ffffff;
+    }
+
+    a {
+      color: white;
+      text-decoration: none;
+      border-bottom: 1px solid white;
+      transition: all 0.3s;
+    }
+
+    a:hover {
+      color: black;
+      background: white;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem 0;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #ffffff;
+    }
+
+    #loading {
+      text-align: center;
+      font-style: italic;
+      margin-top: 1rem;
+      color: #ffffff;
+    }
+
+    /* BOTÃO DE VOLTAR AO TOPO (com imagem) */
+#backToTop {
+  display: none;
+  position: fixed;
+  bottom: 210px;   /* 🔼 sobe a seta */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 50px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 999;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+}
+
+
+#backToTop:hover img {
+  filter: drop-shadow(0 0 12px white);
+  transform: scale(1.1);
+}
+
+
+#backToTop:hover img {
+  filter: drop-shadow(0 0 12px white);
+  transform: scale(1.1);
+}
+
+
+    nav {
+      background: black;
+      border-bottom: 1px solid white;
+    }
+
+    nav strong {
+      color: white;
+      font-size: 1.2rem;
+    }
+    /* RODAPÉ COM BRILHO SUAVE */
+    footer {
+      text-align: center;
+      padding: 1.5rem 0;
+      margin-top: 3rem;
+      background: #000;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 0.9rem;
+      color: #aaa;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
+    }
+
+    footer a {
+      color: white;
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+    }
+/* 🌙 Navegação (barra superior) */
+nav {
+  background-color: #000;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 1.2rem 0;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+}
+
+nav strong {
+  color: #fff;
+  font-size: 1.3rem;
+  letter-spacing: 2px;
+}
+
+/* 🌙 Cabeçalho com brilho branco suave igual aos cards */
+header {
+  margin: 0;
+  padding: 3rem 1rem 3rem 1rem;
+  background-color: #000;
+  text-align: center;
+  color: #fff;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.15); /* brilho branco suave fixo */
+}
+
+/* Brilho fixo, sem pulsação */
+header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+/* Título e subtítulo */
+header h1 {
+  font-size: 2.8rem;
+  letter-spacing: 3px;
+  color: #ffffff;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.4),
+               0 0 10px rgba(255, 255, 255, 0.2);
+  margin-bottom: 0.8rem;
+}
+
+header p {
+  color: #ffffff;
+  font-size: 1.1rem;
+}
+
+
+
+/* Reutiliza a animação dos cards */
+@keyframes neonPulse {
+  0%, 100% {
+    opacity: 0.4;
+    box-shadow: 0 0 5px white, 0 0 15px white;
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 20px white, 0 0 40px white;
+  }
+}
+
+
+/* ✨ Rodapé com o mesmo estilo de brilho branco suave */
+footer {
+  background-color: #000;
+  color: #ffffff;
+  text-align: center;
+  padding: 2rem 0;
+  margin-top: 3rem;
+  font-size: 1rem;
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  box-shadow: 0 -0.5rem 1rem rgba(255, 255, 255, 0.15); /* brilho suave */
+}
+
+/* Linha branca suave no topo do rodapé */
+footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+footer small {
+  display: block;
+  line-height: 1.6;
+  color: #ffffff;
+}
+
+footer a {
+  color: #fff;
+  text-decoration: none;
+  border-bottom: 1px solid white;
+  transition: all 0.3s ease;
+}
+
+footer a:hover {
+  color: black;
+  background: white;
+  border-radius: 4px;
+  padding: 2px 6px;
+  box-shadow: 0 0 10px white;
+}
+
+/* Barra de pesquisa centralizada na parte “meio” da tela */
+form {
+  display: flex;
+  justify-content: center;
+  margin-top: 4rem;
+  margin-bottom: 0.2rem; /* 🔥 quase colado */
+}
+
+
+form input {
+  width: 80%;
+  max-width: 400px; /* largura máxima */
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  background: #000000;
+  border: 1px solid #444;
+  color: white;
+  font-size: 1rem;
+}
+
+form input:focus {
+  border-color: white;
+  box-shadow: 0 0 10px white;
+  outline: none;
+}
+ /* 📱 Responsividade para telas menores */
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 2rem;
+  }
+  form {
+    flex-direction: column;
+    width: 90%;
+    gap: 1rem;
+  }
+  .card img {
+    height: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.6rem;
+  }
+  header p {
+    font-size: 1rem;
+  }
+  .card h3 {
+    font-size: 0.9rem;
+  }
+  .card p {
+    font-size: 0.8rem;
+  }
+  form input {
+    width: 100%;
+  }
+}
+/* 📱 Centraliza e ajusta a largura da barra de pesquisa em telas menores */
+@media (max-width: 768px) {
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+  }
+
+  form input {
+    width: 70%;
+    max-width: 280px;
+    text-align: center;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  form input {
+    width: 80%;
+    max-width: 240px;
+  }
+}
+#news-container p {
+  text-align: center;
+  width: 100%;
+  font-size: 1.1rem;
+  color: #fff;
+   
+}
+
+@media (max-width: 480px) {
+  #news-container {
+    grid-template-columns: 1fr; /* força 1 card por linha */
+    padding: 0.3rem;
+  }
+}
+
+
+  </style>
+</head>
+
+<body>
+ 
+
+<header>
+  <h1> NewsNow</h1>
+  <p>Fique por dentro das últimas notícias do mundo!</p>
+</header>
+
+
+
+    <form id="search-form">
+  <input type="text" id="query" placeholder="Buscar por tema (ex: tecnologia, esportes...)" required>
+</form>
+
+
+    <div id="loading" style="display:none;">Carregando notícias...</div>
+   <main>
+  <section id="news-container"></section>
+</main>
+
+
+  <button id="backToTop" onclick="scrollToTop()">
+  <img src="./seta/seta-para-cima.png" alt="Voltar ao topo">
+</button>
+
+ <footer style="width: 100%;">
+  <div class="container">
+    <p>© Gabriel Borges. Todos os direitos reservados. • 2025
+       
+    </p>
+  </div>
+</footer>
+
+
+
+  <script>
+    const apiKey = "f6b3a8ff812b4b00be2d12fcc952b9d3"; 
+    const newsContainer = document.getElementById("news-container");
+    const loading = document.getElementById("loading");
+    const searchForm = document.getElementById("search-form");
+    const queryInput = document.getElementById("query");
+    const backToTop = document.getElementById("backToTop");
+
+    // Mostra o botão quando chega ao fim da página
+    window.addEventListener("scroll", () => {
+      const scrollBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 2;
+      backToTop.style.display = scrollBottom ? "flex" : "none";
+    });
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+   async function getNews(query = "technology") {
+  newsContainer.innerHTML = "";
+  loading.style.display = "block";
+  try {
+    const apiUrl = `https://newsapi.org/v2/everything?q=${query}&pageSize=12&sortBy=publishedAt&apiKey=${apiKey}`;
+
+    const proxyUrl = "https://corsproxy.io/?";
+    const response = await fetch(proxyUrl + encodeURIComponent(apiUrl));
+    const data = await response.json();
+
+    loading.style.display = "none";
+
+    if (!data.articles || data.articles.length === 0) {
+      newsContainer.innerHTML = "<p>Nenhuma notícia encontrada.</p>";
+      return;
+    }
+
+    data.articles.forEach(article => {
+      const image = article.urlToImage || "https://via.placeholder.com/400x200?text=Sem+Imagem";
+      const card = `
+        <article class="card">
+          <img src="${image}" alt="Imagem da notícia">
+          <div class="card-content">
+            <h3>${article.title}</h3>
+            <p>${article.description || "Sem descrição disponível."}</p>
+            <a href="${article.url}" target="_blank">Ler mais</a>
+          </div>
+        </article>
+      `;
+      newsContainer.innerHTML += card;
+    });
+
+  } catch (error) {
+    console.error("Erro ao buscar notícias:", error);
+    loading.style.display = "none";
+    newsContainer.innerHTML = "<p>Ocorreu um erro ao carregar as notícias.</p>";
+  }
+}
+
+
+    searchForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const query = queryInput.value.trim();
+      if (query) getNews(query);
+    });
+
+    getNews();
+  </script>
+</body>
+</html>
